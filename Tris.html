@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		table {
+		table-layout : fixed;
+		width : 300px;
+		height: 300px;
+		border: 3px solid black;
+		background : white;
+	}
+	td{
+		text-align: center;
+		border: 3px solid black;
+	}
+	th{
+		border: 3px solid black;
+	}
+	button{
+		font-size: x-large;
+		
+	}
+		</style>
+	<title>Tris</title>
+	<script type="text/javascript">
+		var matrice = new Array(3);
+		var stato;
+		var giocatoreX;
+		var giocatoreO;
+		var turno = 1;
+		var finito = false;
+		for(var i = 0; i < matrice.length; i++){
+			matrice[i] = new Array(3);
+			matrice[i][0] = -1;
+			matrice[i][1] = -1;
+			matrice[i][2] = -1;
+		}
+		function inizia(){
+			if(finito == true){
+				location.reload();
+			}
+			giocatoreX = document.getElementById("giocatoreX").value;
+			giocatoreO = document.getElementById("giocatoreO").value;
+			stato =Math.round(Math.random());
+			console.log(giocatoreX);
+            console.log(giocatoreO);
+			console.log(stato);
+			switch(stato){
+						case 0: document.getElementById("vincitore").innerHTML = "Inizia " + giocatoreO;
+						break;
+						case 1: document.getElementById("vincitore").innerHTML = "Inizia " + giocatoreX;
+						break;
+					}
+		}
+		function clicca(numX,numY){
+			console.log(numX);
+			if(stato == 1 && matrice[numX][numY] == -1 && !finito ){
+				var pulsante = document.getElementById(""+numX+","+numY+"");
+				console.log(pulsante);
+				pulsante.innerHTML = "<div style='color:blue'>X</div>";
+			}
+			else if(stato == 0 && matrice[numX][numY] == -1 && !finito){
+				var pulsante = document.getElementById(""+numX+","+numY+"");
+				console.log(pulsante);
+				pulsante.innerHTML = "<div style='color:red'>O</div>";
+				
+			}
+			if(matrice[numX][numY] == -1 && !finito){
+				matrice[numX][numY] = stato;
+				if(turno >= 5){
+					controlloVittoria(numX, numY);
+				}
+				stato = (stato+1)%2;
+				turno++;
+			}
+			
+		}
+		function controlloVittoria(numX, numY){
+			var vittoria = true;
+			for(var i = 0; i < 3; i++){
+				if(matrice[i][numY] != stato){
+					vittoria = false;
+				}
+			}
+			if(vittoria == true){
+				switch(stato){
+						case 0: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreO;
+						break;
+						case 1: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreX;
+						break;
+					}
+					console.log(stato);
+					document.getElementById("inizia").innerHTML = "Rigioca!";
+				finito = true;
+			}else{
+				vittoria = true;
+				for(var k = 0; k < 3; k++){
+					if(matrice[numX][k] != stato){
+						vittoria = false;
+					}
+				}
+				if(vittoria == true){
+					switch(stato){
+						case 0: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreO;
+						break;
+						case 1: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreX;
+						break;
+					}
+					document.getElementById("inizia").innerHTML = "Rigioca!";
+					finito = true;
+				}else if((numX+numY)%2 == 0){  //cotrollo le diagonali se sono in 1,1 o 0,0, 0,2 o 2,0 o 2,2
+					vittoria = true;
+					if((numX == 1 && numY == 1) ||(numX == 0 && numY == 0) ||(numX == 2 && numY == 2)  ){
+						for(i = 0; i < 3; i++){
+							if(matrice[i][i] != stato){
+								vittoria = false;
+							}
+						}
+						if(vittoria == true){
+							switch(stato){
+								case 0: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreO;
+								break;
+								case 1: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreX;
+								break;
+							}
+							document.getElementById("inizia").innerHTML = "Rigioca!";
+						finito = true;	
+						}
+					}	
+					if((numX == 1 && numY == 1) ||(numX == 0 && numY == 2) ||(numX == 2 && numY == 0)  ){
+						console.log("prova");
+						for(i = 0; i < 3; i++){
+							if(matrice[i][2-i] != stato){
+								vittoria = false;
+								console.log(stato);
+							}
+						}
+						if(vittoria == true){
+							switch(stato){
+								case 0: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreO;
+								break;
+								case 1: document.getElementById("vincitore").innerHTML = "Ha vinto " + giocatoreX;
+								break;
+							}
+							document.getElementById("inizia").innerHTML = "Rigioca!";
+						finito = true;	
+					}
+				}
+			}
+		}
+		if(turno >= 9 && vittoria == false){
+			controlloPareggio();
+		}	
+	}	
+
+		function controlloPareggio(){
+			document.getElementById("vincitore").innerHTML = giocatoreX  +" e "+ giocatoreO + " hanno pareggiato";
+			document.getElementById("inizia").innerHTML = "Rigioca!";
+			finito = true;	
+	}	
+		
+</script>
+</head>
+<body>
+	<div style='text-align: center;'>
+	<h1>Tris</h1>
+	<p>Inserisci il nome di chi sceglie  la X:</p>
+		<input type="textfield" id="giocatoreX">
+		<p>Inserisci il nome di chi sceglie  la O:</p>
+		<input type="textfield" id="giocatoreO"><br><br>
+		<button onclick="inizia()" id="inizia">Inizia</button><br><br><br>
+	<table align="center">
+		<tr><td><button onclick="clicca('0','0')" id="0,0">clicca</button></td><td><button onclick="clicca('0','1')" id="0,1">clicca</button></td><td><button onclick="clicca('0','2')"id="0,2">clicca</button></td></tr>
+		<tr><td><button onclick="clicca('1','0')"id="1,0">clicca</button></td><td><button onclick="clicca('1','1')"i id="1,1">clicca</button></td><td><button onclick="clicca('1','2')" id="1,2">clicca</button></td></tr>
+		<tr><td><button onclick="clicca('2','0')" id="2,0">clicca</button></td><td><button onclick="clicca('2','1')" id="2,1">clicca</button></td><td><button onclick="clicca('2','2')"id="2,2">clicca</button></td></tr>
+	</table>
+	<h3 id = "vincitore"></h3> 
+	</div>
+
+</body>
+</html>
